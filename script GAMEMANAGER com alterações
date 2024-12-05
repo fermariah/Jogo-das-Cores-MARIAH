@@ -1,0 +1,78 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+    #region Singleton
+    public static GameManager instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+    #endregion
+
+    int corDaVez, acertos, erros;
+    public int[] sequencia;
+    [SerializeField] string[] nomes;
+
+    private void Start()
+    {
+        GerarSequencia();
+    }
+
+    void GerarSequencia()
+    {
+        corDaVez = 0;
+
+        sequencia = new int[Random.Range(3, nomes.Length)];
+        UIManager.instance.LimparTexto();
+
+        for(int i = 0; i < sequencia.Length; i++) 
+        {
+            sequencia[i] = Random.Range(0, nomes.Length);
+            UIManager.instance.AtualizarSequencia(nomes[sequencia[i]]);
+        }
+    }
+
+    public void ChecarCor(int corIndex)
+    {
+        if(corIndex == sequencia[corDaVez])
+        {
+            corDaVez++;
+            if(corDaVez == sequencia.Length)
+            {
+                acertos++;
+                UIManager.instance.AtualizarAcertos(acertos);
+                GerarSequencia();
+            }
+        }
+        else
+        {
+            erros++;
+            UIManager.instance.AtualizarErros(erros);
+            GerarSequencia();
+        }
+    }
+
+    public void VerificarCorEscolhida(bool corEscolhida) //método com parametro para verificar se a cor escolhida é a correta, se não irá penalizar ou reiniciar
+    {
+        
+        if (corEscolhida == true)
+        {
+            Debug.Log("Cor correta!");
+        }
+        else
+        {
+            Debug.Log("Cor errada!");
+        }
+    }
+
+    public Color GerarCorAleatoria() //método com retorno para gerar uma nova cor aleatória sempre que precisar.
+    {
+        Color[] cores = { Color.red, Color.blue, Color.green, Color.yellow };
+        int index = Random.Range(0, cores.Length);
+        return cores[index];
+    }
+}
